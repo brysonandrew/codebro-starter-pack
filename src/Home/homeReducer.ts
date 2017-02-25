@@ -1,5 +1,5 @@
 import * as Immutable from "immutable";
-import {AsyncGet, AsyncGetStatus} from "../utils/async_get";
+import {AsyncGet, AsyncGetStatus} from "../redux/utils/async_get";
 //import {AsyncPost, AsyncPostStatus} from "../utils/async_post";
 import {
     FETCH_ALL__INIT,
@@ -8,11 +8,11 @@ import {
     UPDATE__FILTER,
     UPDATE__SEARCH,
     UPDATE__SORT
-} from "../actions/actions";
-import {createReducer} from "../utils/reducers";
-import {IAlbum, IFilters, IColumns} from "../../models";
-import {statFilters} from "../../data/StatFilters";
-import {statColumns} from "../../data/StatColumns";
+} from "./homeActions";
+import {createReducer} from "../redux/utils/reducers";
+import {IAlbum, IFilters, IColumns} from "../models";
+import {statFilters} from "../data/StatFilters";
+import {statColumns} from "../data/StatColumns";
 
 export interface ISubState {
     stats: AsyncGet<IAlbum[]>;                        // The events data as an AsyncGet

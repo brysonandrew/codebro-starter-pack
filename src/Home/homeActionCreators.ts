@@ -5,8 +5,8 @@ import {
     UPDATE__FILTER,
     UPDATE__SEARCH,
     UPDATE__SORT
-} from "../actions/actions";
-import {createAction, checkServerError} from "../utils/actions";
+} from "./homeActions";
+import {createAction, checkServerError} from "../redux/utils/actions";
 
 export function fetchAll(artist) {
   return dispatch => {

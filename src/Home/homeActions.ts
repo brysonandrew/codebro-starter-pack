@@ -1,4 +1,4 @@
-import {IStats} from "../../models";
+import {IStats} from "../models";
 
 export module FETCH_ALL__INIT {
     export let type = "FETCH_ALL__INIT";

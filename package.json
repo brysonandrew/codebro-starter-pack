@@ -1,15 +1,14 @@
 {
-  "name": "isomorphic-react-typescript-bootstrap",
+  "name": "isomorphic-react-typescript",
   "version": "0.0.0",
-  "description": "Bootstrap repo for isomorphic React.js apps with Typescript.",
+  "description": "Repo for isomorphic React.js apps with Typescript.",
   "scripts": {
-    "start": "node ./build/server.js",
+    "release": "node ./build/server.js",
     "dev": "node ./webpack/dev.js",
     "watch": "node ./node_modules/webpack/bin/webpack.js --watch --config ./webpack/server.js"
   },
   "author": "Porizi Technologies | Diego Castillo <diegocasmo@gmail.com>",
   "dependencies": {
-    "bootstrap": "^3.3.6",
     "css-loader": "^0.23.1",
     "ejs": "^2.4.2",
     "express": "^4.14.0",

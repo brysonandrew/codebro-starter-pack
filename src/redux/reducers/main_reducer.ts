@@ -1,5 +1,5 @@
 import {combineReducers} from 'redux';
-import {subReducer, ISubState} from './sub_reducer';
+import {subReducer, ISubState} from '../../Home/homeReducer';
 import Reducer = Redux.Reducer;
 /**
  * State of the admin panel store

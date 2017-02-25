@@ -19,8 +19,8 @@ app.use('/styles.css', express.static('./build/styles.css'));
 app.use('/client.js', express.static('./build/client.js'));
 app.use('/images', express.static('./public/images'));
 
-// Endpoint to get all React components CSS
-app.get('/components.css', (req, res) => {
+// Endpoint to get all React Widgets CSS
+app.get('/Widgets.css', (req, res) => {
   res.setHeader('content-type', 'text/css');
   res.send(getAllComponentsCSS());
 });
