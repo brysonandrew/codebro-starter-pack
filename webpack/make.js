@@ -49,7 +49,7 @@ module.exports = function make(options) {
     },
 
     resolve: {
-      modulesDirectories: ['./node_modules', './src/Widgets'],
+      modulesDirectories: ['./node_modules', './src/components'],
       extensions: ['', '.js', '.ts', '.tsx', '.css']
     },
 
