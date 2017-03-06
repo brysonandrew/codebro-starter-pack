@@ -38,6 +38,6 @@ typings install --global --save dt~react-dom
 ```
 
 ---
-maintained by
+maintained by code bro
 
 ![codebro logo](http://codebro.io/images/logo.PNG "Code Bro")
