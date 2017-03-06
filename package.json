@@ -7,7 +7,7 @@
     "dev": "node ./webpack/dev.js",
     "watch": "node ./node_modules/webpack/bin/webpack.js --watch --config ./webpack/server.js"
   },
-  "author": "Porizi Technologies | Diego Castillo <diegocasmo@gmail.com>",
+  "author": "Andrew Bryson | andrew@codebro.io",
   "dependencies": {
     "css-loader": "^0.23.1",
     "ejs": "^2.4.2",

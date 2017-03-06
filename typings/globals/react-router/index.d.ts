@@ -80,11 +80,7 @@ declare namespace ReactRouter {
 
     function createMemoryHistory(options?: H.HistoryOptions): H.History
 
-<<<<<<< HEAD
-    /* Widgets */
-=======
     /* components */
->>>>>>> e8e6ef6a9dfc06fe486a0b3873434a9a508076c3
 
     interface RouterProps extends React.Props<Router> {
         history?: H.History
@@ -133,12 +129,7 @@ declare namespace ReactRouter {
     }
     const RouterContext: RouterContext
 
-
-<<<<<<< HEAD
-    /* Widgets (configuration) */
-=======
     /* components (configuration) */
->>>>>>> e8e6ef6a9dfc06fe486a0b3873434a9a508076c3
 
     interface RouteProps extends React.Props<Route> {
         path?: RoutePattern
@@ -510,9 +501,5 @@ declare module "react-router" {
     }
 
     export default Router
+}
 
-<<<<<<< HEAD
-}
-=======
-}
->>>>>>> e8e6ef6a9dfc06fe486a0b3873434a9a508076c3
