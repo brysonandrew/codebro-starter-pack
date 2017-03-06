@@ -1,43 +1,39 @@
 import * as React from 'react';
-import {addComponentCSS} from '../utils/css_styler';
-
-addComponentCSS({
-    //language=CSS
-    default: `
-    div.search-bar {
-        margin-bottom: 20px;
-    }
-    div.search-bar__input {
-        box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);    
-    }
-    `
-});
 
 interface ISearchBarProps {
-  onChange: (string) => void;
+    onChange: (event: Event) => void;
 }
 
 export class SearchBar extends React.Component<ISearchBarProps, any> {
 
-    handleChange(event){
-      this.props.onChange(event.target.value.substr(0, 20)); //.substr limits characters used in filter to 20 so characters falling outside of bar are not counted
+    handleChange(e){
+        this.props.onChange(e.target.value.substr(0, 20));
     }
 
     public render(): JSX.Element {
+        let styles = {
+            searchBar: {
+                display: "inline-block",
+                width: "80vw"
+            },
+            searchBar__input: {
+                background: "rgba(0, 0, 0, 0.66)",
+                borderRadius: 8,
+                width: "100%",
+                padding: 8,
+                fontSize: 20,
+                border: "2px solid #2979FF",
+                color: "#2979FF"
+            }
+        };
         return (
-          <div className="search-bar row">
-            <div className="col-sm-8 col-sm-offset-2">
-              <div className="search-bar__input input-group">
-                <span className="input-group-btn">
-                  <button className="btn btn-default" type="button">🔎</button>
-                </span>
-                <input onChange={(event) => this.handleChange(event)}
-                       type="text"
-                       className="form-control"
-                       placeholder="Search Albums"/>
-              </div>
+            <div style={ styles.searchBar }>
+                <input
+                    style={ styles.searchBar__input }
+                    onChange={(e) => this.handleChange(e)}
+                    type="text"
+                    placeholder="Search Albums..."/>
             </div>
-          </div>
         );
     }
 }

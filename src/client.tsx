@@ -1,9 +1,9 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { browserHistory, Router } from 'react-router';
-import {Provider} from 'react-redux';
+import { Provider } from 'react-redux';
 import routes from './routes/index';
-import {store} from './redux/stores/store';
+import { store } from './redux/stores/store';
 
 // Render the application
 ReactDOM.render(

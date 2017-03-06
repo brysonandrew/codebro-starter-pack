@@ -1,4 +1,4 @@
-# Bootstrap repo for isomorphic React.js apps with Typescript.
+# Repo for isomorphic React.js apps with Typescript.
 
 ## Installation:
 ``` bash

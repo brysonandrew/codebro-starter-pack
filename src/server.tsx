@@ -15,9 +15,9 @@ const app = express();
 // Set view engine
 app.set('views', './src/server/views');
 app.set('view engine', 'ejs');
-app.use('/styles.css', express.static('./build/styles.css'));
 app.use('/client.js', express.static('./build/client.js'));
 app.use('/images', express.static('./public/images'));
+app.use('/fonts', express.static('./public/fonts'));
 
 // Endpoint to get all React components CSS
 app.get('/components.css', (req, res) => {

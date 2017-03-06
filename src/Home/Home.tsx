@@ -1,28 +1,18 @@
 import * as React from 'react';
 import * as Immutable from 'immutable';
-import {connect} from 'react-redux';
-import {addComponentCSS} from '../utils/css_styler';
-import {AsyncGet} from '../redux/utils/async_get';
-import {IDictionary, IAlbum, IFilters, IColumns } from '../models';
-import {statFilters} from '../data/StatFilters';
-import {statColumns} from '../data/StatColumns';
-import {IStoreState} from '../redux/reducers/main_reducer';
-import {fetchAll, changeFilter, changeSearch, changeSort} from './homeActionCreators';
-import {Filters} from '../Widgets/Filters';
-import {ColumnHeading} from '../Widgets/ColumnHeading';
-import {Dropdown} from '../Widgets/Dropdown';
-import {SearchBar} from '../Widgets/SearchBar';
-//import {Columns} from '../data/Columns';
-//import {Filters} from '../data/Filters';
+import { connect } from 'react-redux';
+import { AsyncGet } from '../redux/utils/async_get';
+import { IDictionary, IAlbum, IFilters, IColumns } from '../models';
+import { statFilters } from '../data/StatFilters';
+import { statColumns } from '../data/StatColumns';
+import { IStoreState } from '../redux/reducers/main_reducer';
+import { fetchAll, changeFilter, changeSearch, changeSort } from './homeActionCreators';
+import { Filter } from '../Widgets/Filter';
+import { ColumnHeading } from '../Widgets/ColumnHeading';
+import { Dropdown } from '../Widgets/Dropdown';
+import { SearchBar } from '../Widgets/SearchBar';
 import { bands } from '../data/Genres';
 
-addComponentCSS({
-    //language=CSS
-    default: `
-    .main-page__filters {
-    }
-    `
-});
 
 interface IProperties {
     stats: AsyncGet<IAlbum[]>,
@@ -57,117 +47,132 @@ export class MainPage extends React.Component<IProps, IState> {
         this.props.onPageLoad();
     }
 
-    private handleChange(searchText) {
+    handleChange(searchText) {
         this.props.onFilterBySearch(searchText);
     }
 
-    private filterStats(stats){
+    filterStats(stats){
 
       let filteredStats = stats;
 
-  //filter by searchbar
-      if(this.props.searchBarTyped !== "") {
-        filteredStats = filteredStats.filter((info) => info.name.toLowerCase().indexOf(this.props.searchBarTyped) >= 0)
-      }
-  //filter by checkbox
-      statFilters.forEach((filter, index) => {
-        if (this.props.filters[index].active === true) {
-          filteredStats = filteredStats.filter(filter.filterFunction)
+//filter by searchbar
+        if(this.props.searchBarTyped !== "") {
+            filteredStats = filteredStats.filter((info) => info.name.toLowerCase().indexOf(this.props.searchBarTyped) >= 0)
         }
-      });
+//filter by checkbox
+        statFilters.forEach((filter, index) => {
+            if (this.props.filters[index].active === true) {
+                filteredStats = filteredStats.filter(filter.filterFunction)
+            }
+        });
 //sorting users
-      if (this.props.columns[this.props.sortByColumnIndex].isSortReversed) {
-        filteredStats = Immutable.List(filteredStats)
-          .sortBy(statColumns[this.props.sortByColumnIndex].sortFunction).reverse();
-      } else {
-        filteredStats = Immutable.List(filteredStats)
-          .sortBy(statColumns[this.props.sortByColumnIndex].sortFunction);
-      }
+        if (this.props.columns[this.props.sortByColumnIndex].isSortReversed) {
+            filteredStats = Immutable.List(filteredStats)
+                .sortBy(statColumns[this.props.sortByColumnIndex].sortFunction).reverse();
+        } else {
+            filteredStats = Immutable.List(filteredStats)
+                .sortBy(statColumns[this.props.sortByColumnIndex].sortFunction);
+        }
 
-      return filteredStats;
+        return filteredStats;
     }
 
-    private renderUsersFilter() {
+    renderUsersFilter() {
         return AsyncGet.render(this.props.stats, {
             fetched: (albums: IAlbum[]) => (
-                <form className="main-page__filters">
+                <div>
                     {statFilters.map((info, index) =>
-                     <Filters key={index}
+                     <Filter key={index}
                         index={index}
                         heading={info.heading}
                         total={albums.filter(info.filterFunction).length}
                         onFilterByCheckbox={this.props.onFilterByCheckbox}
                       />
                   )}
-                </form>
+                </div>
             )
         });
     }
 
-    private renderColumns() {
-      return  <thead>
-                  <tr>
+    renderColumns() {
+        return  <thead>
+                    <tr>
                     {statColumns.map((info, index) =>
-                      <ColumnHeading
-                        key={index}
-                        heading={info.heading}
-                        index={index}
-                        pic={info.pic}
-                        isSortReversed={info.isSortReversed}
-                        onSortByColumn={this.props.onSortByColumn}
-                        showArrow={(this.props.sortByColumnIndex===index)}
-                      />
+                        <ColumnHeading
+                            key={index}
+                            heading={info.heading}
+                            index={index}
+                            pic={info.pic}
+                            isSortReversed={info.isSortReversed}
+                            onSortByColumn={this.props.onSortByColumn}
+                            showArrow={(this.props.sortByColumnIndex===index)}
+                        />
                     )}
-                  </tr>
-              </thead>
+                    </tr>
+                </thead>
     }
 
-    private renderRows() {
-      return AsyncGet.render(this.props.stats, {
-                fetched: (albums: IAlbum[]) => {
-                    return <tbody> {
+    renderRows() {
+        return AsyncGet.render(this.props.stats, {
+            fetched: (albums: IAlbum[]) => {
+                return  <tbody> {
                         this.filterStats(albums)
                             .map((album, index) => (
-                                <tr key={index}>
-                                    <td>
-                                      {(album.images[0].url)
-                                      ? <img style={{width: "40%", height: "auto"}} src={album.images[0].url} />
-                                      : null}
-                                    </td>
-                                    <td>{album.artists[0].name}</td>
-                                    <td>{album.name}</td>
-                                    <td>{album.album_type}</td>
+                            <tr key={index}>
+                                <td style={{width: "20%"}}>
+                                {(album.images[0].url)
+                                    ?   <img style={{width: "40%", height: "auto"}} src={album.images[0].url} />
+                                    :   null}
+                                </td>
+                                <td style={{width: "20%"}}>
+                                    {album.artists[0].name}
+                                </td>
+                                <td style={{width: "20%"}}>
+                                    {album.name}
+                                </td>
+                                <td style={{width: "20%"}}>
+                                    {album.album_type}
+                                </td>
+                                <td style={{width: "20%"}}>
                                     <Dropdown/>
-                                </tr>
+                                </td>
+                            </tr>
                             )
                         )}
-                    </tbody>
-                }
-            })
+                        </tbody>
+            }
+        })
     }
 
-    private renderUsers() {
-      return <div>
-                <table className="pz-admin-users__table table table-bordered table-striped table-hover table-responsive text-center">
-                  {this.renderColumns()}
-                  {this.renderRows()}
+    renderUsers() {
+        return  <table className="pz-admin-users__table table table-bordered table-striped table-hover table-responsive text-center">
+                    {this.renderColumns()}
+                    {this.renderRows()}
                 </table>
-              </div>
     }
 
-    public render(): JSX.Element {
+    render(): JSX.Element {
+
+        let styles = {
+            home: {
+                textAlign: "center"
+            },
+            home__heading: {
+                marginTop: 20,
+                display: "inline-block",
+                textAlign: "center"
+            }
+        };
 
         return (
-            <div>
-                <div className="container-fluid">
-                    <div className="text-center">
-                      <h1>Hello World</h1>
-                      {this.renderUsersFilter()}
-                      <SearchBar onChange={this.handleChange.bind(this)} />
-                    </div>
-                    {this.renderUsers()}
-                </div>
+        <div style={ styles.home }>
+            <div style={ styles.home__heading }>
+                <h1>Hello World</h1>
+                {this.renderUsersFilter()}
+                <SearchBar onChange={this.handleChange.bind(this)} />
             </div>
+            {this.renderUsers()}
+        </div>
         );
     }
 }
@@ -189,9 +194,9 @@ function mapStateToProps(state: IStoreState, ownProps: IProps): IProperties {
 function mapDispatchToProps(dispatch, ownProps: IProps): ICallbacks {
     return {
         onPageLoad: () => {
-          bands.map(stat =>
-            dispatch(fetchAll(stat))
-          )
+            bands.map(stat =>
+                dispatch(fetchAll(stat))
+            )
         },
         onFilterByCheckbox: (filterIndex, isActive) => {
             dispatch(changeFilter(filterIndex, isActive));
