@@ -13,7 +13,6 @@ import { Dropdown } from '../Widgets/Dropdown';
 import { SearchBar } from '../Widgets/SearchBar';
 import { bands } from '../data/Genres';
 
-
 interface IProperties {
     stats: AsyncGet<IAlbum[]>,
     filters: IFilters[],
@@ -29,15 +28,11 @@ interface ICallbacks {
     onFilterBySearch: (string) => void;
 }
 
-interface IProps extends IProperties, ICallbacks {
+interface IProps extends IProperties, ICallbacks {}
 
-}
+interface IState extends IProperties, ICallbacks {}
 
-interface IState extends IProperties, ICallbacks {
-
-}
-
-export class MainPage extends React.Component<IProps, IState> {
+export class Home extends React.Component<IProps, IState> {
 
     public constructor(props?: any, context?: any) {
         super(props, context);
@@ -144,8 +139,8 @@ export class MainPage extends React.Component<IProps, IState> {
         })
     }
 
-    renderUsers() {
-        return  <table className="pz-admin-users__table table table-bordered table-striped table-hover table-responsive text-center">
+    renderTable() {
+        return  <table>
                     {this.renderColumns()}
                     {this.renderRows()}
                 </table>
@@ -171,7 +166,7 @@ export class MainPage extends React.Component<IProps, IState> {
                 {this.renderUsersFilter()}
                 <SearchBar onChange={this.handleChange.bind(this)} />
             </div>
-            {this.renderUsers()}
+            {this.renderTable()}
         </div>
         );
     }
@@ -210,6 +205,6 @@ function mapDispatchToProps(dispatch, ownProps: IProps): ICallbacks {
     }
 }
 
-export let MainPageFromStore = connect(
+export let HomeFromStore = connect(
     mapStateToProps, mapDispatchToProps
-)(MainPage);
+)(Home);
