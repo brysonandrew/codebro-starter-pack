@@ -1,23 +1,23 @@
 import * as http from 'http';
 import * as express from 'express';
 import * as React from 'react';
-import * as ReactDOMServer from 'react-dom/server';
-import { Router, RouterContext, match } from 'react-router';
-import {getAllComponentsCSS} from './utils/css_styler';
-import {store} from "./redux/stores/store";
-import {Provider} from 'react-redux';
-import routes from './routes';
-
+const compression = require('compression');
+import { getAllComponentsCSS } from './utils/css_styler';
+import { Provider } from 'react-redux';
+import { renderIndexView } from "./server/renderIndexView";
 const release = (process.env.NODE_ENV === 'production');
 const port = (parseInt(process.env.PORT, 10) || 3000) - (!release as any);
 const app = express();
 
+//compress requests
+app.use(compression());
+
 // Set view engine
 app.set('views', './src/server/views');
 app.set('view engine', 'ejs');
+app.use('/fonts', express.static('./public/fonts'));
 app.use('/client.js', express.static('./build/client.js'));
 app.use('/images', express.static('./public/images'));
-app.use('/fonts', express.static('./public/fonts'));
 
 // Endpoint to get all React components CSS
 app.get('/components.css', (req, res) => {
@@ -25,38 +25,7 @@ app.get('/components.css', (req, res) => {
   res.send(getAllComponentsCSS());
 });
 
-// Route handler that rules them all!
-app.get('*', (req: any, res: any) => {
-
-  // Do a router match
-  match({
-    routes: (
-      <Provider store={store}>
-        <Router>{routes}</Router>
-      </Provider>
-    ),
-    location: req.url,
-  },
-  (err: any, redirect: any, props: any) => {
-    // Some sanity checks
-    if (err) {
-      return res.status(500).send(err.message);
-    } else if (redirect) {
-      return res.redirect(302, redirect.pathname + redirect.search);
-    } else if (!props) {
-      return res.status(404).send('not found');
-    }
-
-    // Respond with EJS template
-    res.render('index', {
-      renderedRoot: ReactDOMServer.renderToString(
-        <Provider store={store}>
-          <RouterContext {...props} />
-        </Provider>
-        )
-    });
-  });
-});
+app.get('*', renderIndexView);
 
 const server = http.createServer(app);
 

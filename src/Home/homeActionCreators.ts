@@ -1,69 +1,59 @@
 import {
-    FETCH_ALL__INIT,
-    FETCH_ALL__SUCCESS,
-    FETCH_ALL__FAILURE,
-    UPDATE__FILTER,
-    UPDATE__SEARCH,
-    UPDATE__SORT
-} from "./homeActions";
-import {createAction, checkServerError} from "../redux/utils/actions";
+    // r o u t i n g
+    UPDATE__LOCATION,
+    UPDATE__PARAMS,
+    // s c r o l l i n g
+    UPDATE__SCROLL_TYPE,
+    UPDATE__WHEEL_EVENT,
+    // v i e w s
+    OPEN__MENU,
+    UPDATE__VIEWPORT_DIMENSIONS
+} from "./HomeActions";
+import { createAction } from "../redux/utils/actions";
 
-export function fetchAll(artist) {
-  return dispatch => {
-    // Dispatch the init action before fetching the data
-    dispatch(createAction(FETCH_ALL__INIT.type, {}));
-    fetch(`https://api.spotify.com/v1/search?q=artist:${artist}&type=album&market=US`, {
-      method : 'GET',
-      headers: {
-        'Accept'      : 'application/json',
-        'Content-Type': 'application/json'
-      },
-      credentials: 'same-origin'
-    })
-      .then((res: any) => { return res.json(); })
-      .then(checkServerError)
-      .then((result) => {
-        dispatch(
-          createAction<FETCH_ALL__SUCCESS>(FETCH_ALL__SUCCESS.type, {
-            stats: result
-          })
-        );
-      })
-      .catch((result) => {
-        dispatch(
-          createAction<FETCH_ALL__FAILURE>(FETCH_ALL__FAILURE.type, {
-            error: result
-          })
-        );
-      });
-  }
-}
-
-export function changeFilter(filterIndex, isActive) {
+// r o u t i n g
+export function saveLocation(nextLocation) {
     return dispatch => {
-        // We dispatch the init action before fetching the data
-        dispatch(createAction<UPDATE__FILTER>(UPDATE__FILTER.type, {
-          filterIndex: filterIndex,
-          isActive: isActive
+        dispatch(createAction<UPDATE__LOCATION>(UPDATE__LOCATION.type, {
+            location: nextLocation,
         }));
     }
 }
-
-export function changeSearch(searchText) {
+export function saveParams(nextParams) {
     return dispatch => {
-        // We dispatch the init action before fetching the data
-        dispatch(createAction<UPDATE__SEARCH>(UPDATE__SEARCH.type, {
-          searchText: searchText
+        dispatch(createAction<UPDATE__PARAMS>(UPDATE__PARAMS.type, {
+            savedParams: nextParams
         }));
     }
 }
-
-export function changeSort(sortIndex, isSortReversed) {
+// s c r o l l i n g
+export function toggleScrollAnimation(isAnimating) {
     return dispatch => {
-        // We dispatch the init action before fetching the data
-        dispatch(createAction<UPDATE__SORT>(UPDATE__SORT.type, {
-          sortIndex: sortIndex,
-          isSortReversed: isSortReversed
+        dispatch(createAction<UPDATE__SCROLL_TYPE>(UPDATE__SCROLL_TYPE.type, {
+            isAnimating: isAnimating,
+        }));
+    }
+}
+export function toggleWheel(isWheel) {
+    return dispatch => {
+        dispatch(createAction<UPDATE__WHEEL_EVENT>(UPDATE__WHEEL_EVENT.type, {
+            isWheel: isWheel,
+        }));
+    }
+}
+// v i e w s
+export function toggleMenu(isMenuOpen) {
+    return dispatch => {
+        dispatch(createAction<OPEN__MENU>(OPEN__MENU.type, {
+            isMenuOpen: isMenuOpen,
+        }));
+    }
+}
+export function changeViewportDimensions(width, height) {
+    return dispatch => {
+        dispatch(createAction<UPDATE__VIEWPORT_DIMENSIONS>(UPDATE__VIEWPORT_DIMENSIONS.type, {
+            width: width,
+            height: height,
         }));
     }
 }

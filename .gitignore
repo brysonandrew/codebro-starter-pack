@@ -262,8 +262,14 @@ fabric.properties
 # *.iml
 # modules.xml
 
+# Ignore dist directory
+/dist
+
 # Ignore build directory
 /build
 
-# Ignore dist directory
-/dist
+# Ignore editor configurations
+.editorconfig
+
+# Ignore unused components
+/unusedComponents

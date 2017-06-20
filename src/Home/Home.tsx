@@ -1,210 +1,113 @@
 import * as React from 'react';
-import * as Immutable from 'immutable';
+import * as history from 'history';
 import { connect } from 'react-redux';
-import { AsyncGet } from '../redux/utils/async_get';
-import { IDictionary, IAlbum, IFilters, IColumns } from '../models';
-import { statFilters } from '../data/StatFilters';
-import { statColumns } from '../data/StatColumns';
-import { IStoreState } from '../redux/reducers/main_reducer';
-import { fetchAll, changeFilter, changeSearch, changeSort } from './homeActionCreators';
-import { Filter } from '../Widgets/Filter';
-import { ColumnHeading } from '../Widgets/ColumnHeading';
-import { Dropdown } from '../Widgets/Dropdown';
-import { SearchBar } from '../Widgets/SearchBar';
-import { bands } from '../data/Genres';
+import { IParams } from "../data/models";
+import { IStoreState } from '../redux/main_reducer';
+import { changeViewportDimensions, saveLocation, saveParams, toggleScrollAnimation } from './HomeActionCreators';
+import { toParams } from "../data/helpers/toParams";
+import { MenuFromStore } from "./Menu/Menu";
+import { PagesFromStore } from "./Body/Pages/Pages";
 
 interface IProperties {
-    stats: AsyncGet<IAlbum[]>,
-    filters: IFilters[],
-    sortByColumnIndex: number,
-    columns: IColumns[],
-    searchBarTyped: string
+    savedParams?: IParams
+    savedLocation?: Location
+    width?: number
 }
 
 interface ICallbacks {
-    onPageLoad: () => void;
-    onFilterByCheckbox: (number, boolean) => void;
-    onSortByColumn: (number, boolean) => void;
-    onFilterBySearch: (string) => void;
+    onLoad?: (nextLocation: history.Location, nextParams: IParams) => void
+    onAnimationStart?: () => void
+    onResizeViewport?: (width: number, height: number) => void
 }
 
-interface IProps extends IProperties, ICallbacks {}
+interface IProps extends IProperties, ICallbacks {
+    location: history.Location
+    history: history.History
+}
 
-interface IState extends IProperties, ICallbacks {}
+interface IState extends IProperties, ICallbacks {
+    isMounted: boolean
+}
 
 export class Home extends React.Component<IProps, IState> {
 
+    timerId;
+
     public constructor(props?: any, context?: any) {
         super(props, context);
+        this.state = {
+            isMounted: false
+        }
     }
 
     componentDidMount() {
-        this.props.onPageLoad();
-    }
+        const { onResizeViewport, onAnimationStart, history } = this.props;
 
-    handleChange(searchText) {
-        this.props.onFilterBySearch(searchText);
-    }
+        const params = toParams(history.location.pathname);
+        if (params["activePagePath"].length > 0) {onAnimationStart()}
 
-    filterStats(stats){
+        this.props.onLoad(
+            history.location,
+            params
+        );
 
-      let filteredStats = stats;
+        this.timerId = setTimeout(() => this.setState({ isMounted: true }), 0);
 
-//filter by searchbar
-        if(this.props.searchBarTyped !== "") {
-            filteredStats = filteredStats.filter((info) => info.name.toLowerCase().indexOf(this.props.searchBarTyped) >= 0)
-        }
-//filter by checkbox
-        statFilters.forEach((filter, index) => {
-            if (this.props.filters[index].active === true) {
-                filteredStats = filteredStats.filter(filter.filterFunction)
-            }
-        });
-//sorting users
-        if (this.props.columns[this.props.sortByColumnIndex].isSortReversed) {
-            filteredStats = Immutable.List(filteredStats)
-                .sortBy(statColumns[this.props.sortByColumnIndex].sortFunction).reverse();
-        } else {
-            filteredStats = Immutable.List(filteredStats)
-                .sortBy(statColumns[this.props.sortByColumnIndex].sortFunction);
-        }
-
-        return filteredStats;
-    }
-
-    renderUsersFilter() {
-        return AsyncGet.render(this.props.stats, {
-            fetched: (albums: IAlbum[]) => (
-                <div>
-                    {statFilters.map((info, index) =>
-                     <Filter key={index}
-                        index={index}
-                        heading={info.heading}
-                        total={albums.filter(info.filterFunction).length}
-                        onFilterByCheckbox={this.props.onFilterByCheckbox}
-                      />
-                  )}
-                </div>
-            )
-        });
-    }
-
-    renderColumns() {
-        return  <thead>
-                    <tr>
-                    {statColumns.map((info, index) =>
-                        <ColumnHeading
-                            key={index}
-                            heading={info.heading}
-                            index={index}
-                            pic={info.pic}
-                            isSortReversed={info.isSortReversed}
-                            onSortByColumn={this.props.onSortByColumn}
-                            showArrow={(this.props.sortByColumnIndex===index)}
-                        />
-                    )}
-                    </tr>
-                </thead>
-    }
-
-    renderRows() {
-        return AsyncGet.render(this.props.stats, {
-            fetched: (albums: IAlbum[]) => {
-                return  <tbody> {
-                        this.filterStats(albums)
-                            .map((album, index) => (
-                            <tr key={index}>
-                                <td style={{width: "20%"}}>
-                                {(album.images[0].url)
-                                    ?   <img style={{width: "40%", height: "auto"}} src={album.images[0].url} />
-                                    :   null}
-                                </td>
-                                <td style={{width: "20%"}}>
-                                    {album.artists[0].name}
-                                </td>
-                                <td style={{width: "20%"}}>
-                                    {album.name}
-                                </td>
-                                <td style={{width: "20%"}}>
-                                    {album.album_type}
-                                </td>
-                                <td style={{width: "20%"}}>
-                                    <Dropdown/>
-                                </td>
-                            </tr>
-                            )
-                        )}
-                        </tbody>
-            }
-        })
-    }
-
-    renderTable() {
-        return  <table>
-                    {this.renderColumns()}
-                    {this.renderRows()}
-                </table>
+        window.addEventListener("resize"
+            , () => onResizeViewport(window.innerWidth, window.innerHeight));
+        window.addEventListener("load"
+            , () => onResizeViewport(window.innerWidth, window.innerHeight));
     }
 
     render(): JSX.Element {
-
-        let styles = {
+        const styles = {
             home: {
-                textAlign: "center"
+                position: "relative",
+                background: "#eeeeee",
+                overflow: "hidden"
             },
-            home__heading: {
-                marginTop: 20,
-                display: "inline-block",
-                textAlign: "center"
-            }
-        };
-
+            home__pages: {}
+        } as any;
         return (
-        <div style={ styles.home }>
-            <div style={ styles.home__heading }>
-                <h1>Hello World</h1>
-                {this.renderUsersFilter()}
-                <SearchBar onChange={this.handleChange.bind(this)} />
+            <div style={ styles.home }>
+                <div>
+                    <MenuFromStore/>
+                </div>
+                <div style={ styles.home__pages }>
+                    <PagesFromStore
+                        history={this.props.history}
+                    />
+                </div>
             </div>
-            {this.renderTable()}
-        </div>
         );
     }
 }
 
 // ------------ redux mappers -------------
 
-
 function mapStateToProps(state: IStoreState, ownProps: IProps): IProperties {
     return {
-        stats: state.subStore.stats,
-        filters: state.subStore.filters,
-        sortByColumnIndex: state.subStore.sortByColumnIndex,
-        searchBarTyped: state.subStore.searchBarTyped,
-        columns: state.subStore.columns
+        width: state.homeStore.width,
+        savedLocation: state.homeStore.savedLocation,
+        savedParams: state.homeStore.savedParams
     };
-
 }
 
 function mapDispatchToProps(dispatch, ownProps: IProps): ICallbacks {
     return {
-        onPageLoad: () => {
-            bands.map(stat =>
-                dispatch(fetchAll(stat))
-            )
+        onLoad: (nextLocation, nextParams) => {
+            dispatch(saveLocation(nextLocation));
+            dispatch(saveParams(nextParams));
         },
-        onFilterByCheckbox: (filterIndex, isActive) => {
-            dispatch(changeFilter(filterIndex, isActive));
+        onAnimationStart: () => {
+            dispatch(toggleScrollAnimation(true));
         },
-        onFilterBySearch: (searchText) => {
-            dispatch(changeSearch(searchText));
-        },
-        onSortByColumn: (sortIndex, isSortReversed) => {
-            dispatch(changeSort(sortIndex, isSortReversed));
+        onResizeViewport: (width, height) => {
+            dispatch(changeViewportDimensions(width, height));
         }
     }
 }
 
-export let HomeFromStore = connect(
+export const HomeFromStore = connect(
     mapStateToProps, mapDispatchToProps
 )(Home);

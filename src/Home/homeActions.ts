@@ -1,50 +1,41 @@
-import {IStats} from "../models";
-
-export module FETCH_ALL__INIT {
-    export let type = "FETCH_ALL__INIT";
+import {IParams} from "../data/models";
+// r o u t i n g
+export module UPDATE__LOCATION {
+    export let type = "UPDATE__LOCATION";
 }
-
-export interface FETCH_ALL__INIT {
+export interface UPDATE__LOCATION {
+    location: Location;
 }
-
-export module FETCH_ALL__SUCCESS {
-    export let type = "FETCH_ALL__SUCCESS";
+export module UPDATE__PARAMS {
+    export let type = "SAVE__PARAMS";
 }
-
-export interface FETCH_ALL__SUCCESS {
-    stats: IStats
+export interface UPDATE__PARAMS {
+    savedParams: IParams;
 }
-
-export module FETCH_ALL__FAILURE {
-    export let type = "FETCH_ALL__FAILURE";
+// s c r o l l i n g
+export module UPDATE__SCROLL_TYPE {
+    export const type = "UPDATE__SCROLL_TYPE";
 }
-
-export interface FETCH_ALL__FAILURE {
-    error: Object;
+export interface UPDATE__SCROLL_TYPE {
+    isAnimating: boolean;
 }
-
-export module UPDATE__FILTER {
-    export let type = "UPDATE__FILTER";
+export module UPDATE__WHEEL_EVENT {
+    export const type = "UPDATE__WHEEL_EVENT";
 }
-
-export interface UPDATE__FILTER {
-    filterIndex: number;
-    isActive: boolean;
+export interface UPDATE__WHEEL_EVENT {
+    isWheel: boolean;
 }
-
-export module UPDATE__SEARCH {
-    export let type = "UPDATE__SEARCH";
+// v i e w s
+export module OPEN__MENU {
+    export const type = "OPEN__MENU";
 }
-
-export interface UPDATE__SEARCH {
-    searchText: string;
+export interface OPEN__MENU {
+    isMenuOpen: boolean;
 }
-
-export module UPDATE__SORT {
-    export let type = "UPDATE__SORT";
+export module UPDATE__VIEWPORT_DIMENSIONS {
+    export let type = "UPDATE__VIEWPORT_DIME";
 }
-
-export interface UPDATE__SORT {
-    sortIndex: number;
-    isSortReversed: boolean;
+export interface UPDATE__VIEWPORT_DIMENSIONS {
+    width: number
+    height: number
 }

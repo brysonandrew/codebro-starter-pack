@@ -1,89 +1,93 @@
-import * as Immutable from "immutable";
-import {AsyncGet, AsyncGetStatus} from "../redux/utils/async_get";
-//import {AsyncPost, AsyncPostStatus} from "../utils/async_post";
 import {
-    FETCH_ALL__INIT,
-    FETCH_ALL__SUCCESS,
-    FETCH_ALL__FAILURE,
-    UPDATE__FILTER,
-    UPDATE__SEARCH,
-    UPDATE__SORT
-} from "./homeActions";
-import {createReducer} from "../redux/utils/reducers";
-import {IAlbum, IFilters, IColumns} from "../models";
-import {statFilters} from "../data/StatFilters";
-import {statColumns} from "../data/StatColumns";
+    // r o u t i n g
+    UPDATE__LOCATION,
+    UPDATE__PARAMS,
+    // s c r o l l i n g
+    UPDATE__SCROLL_TYPE,
+    UPDATE__WHEEL_EVENT,
+    // v i e w s
+    OPEN__MENU,
+    UPDATE__VIEWPORT_DIMENSIONS
+} from "./HomeActions";
+import { createReducer } from "../redux/utils/reducers";
+import { IParams } from "../data/models";
+import { breakPointTests } from "../data/helpers/breakPoints";
+import {AsyncGet} from "../redux/utils/async_get";
 
-export interface ISubState {
-    stats: AsyncGet<IAlbum[]>;                        // The events data as an AsyncGet
-    filters: IFilters[];
-    searchBarTyped: string;
-    sortByColumnIndex: number;
-    columns: IColumns[];
+export interface IHomeState {
+    content: AsyncGet<any>
+    savedLocation: Location
+    savedParams: IParams
+    width: number
+    height: number
+    isAnimating: boolean
+    isWheel: boolean
+    isMenuOpen: boolean
+    isMobile: boolean
+    isTablet: boolean
+    isLaptop: boolean
 }
 
-let initialState : ISubState = {
-    stats: AsyncGet.init(null),
-    filters: statFilters,
-    searchBarTyped: "",
-    sortByColumnIndex: 0,
-    columns: statColumns
+const initialState : IHomeState = {
+    content: AsyncGet.init(null),
+    savedLocation: <Location>{},
+    savedParams: {},
+    isAnimating: false,
+    isWheel: false,
+    isMenuOpen: false,
+    width: 1024,
+    height: 720,
+    isMobile: false,
+    isTablet: false,
+    isLaptop: false,
 };
 
-let accumulatedAlbumItems = [];
-
-export let subReducer = createReducer<ISubState>(initialState, [
+export const homeReducer = createReducer<IHomeState>(initialState, [
+// r o u t i n g
     {
-        action: FETCH_ALL__INIT,
-        handler: function (state:ISubState, action:FETCH_ALL__INIT) {
-            return Immutable.fromJS(state)
-                .setIn(['stats', 'status'], AsyncGetStatus.FETCHING)
-                .toJS();
+        action: UPDATE__LOCATION,
+        handler: function (state: IHomeState, action: UPDATE__LOCATION) {
+            return {...state, savedLocation: action.location};
         }
     },
     {
-        action: FETCH_ALL__SUCCESS,
-        handler: function (state:ISubState, action:FETCH_ALL__SUCCESS) {
-            accumulatedAlbumItems.push(action.stats.albums.items);
-            let mergedAlbumItems = [].concat.apply([], accumulatedAlbumItems);
-            return Immutable.fromJS(state)
-                .setIn(['stats', 'status'], AsyncGetStatus.FETCHED)
-                .setIn(['stats', 'value'], mergedAlbumItems)
-                .toJS();
+        action: UPDATE__PARAMS,
+        handler: function (state: IHomeState, action: UPDATE__PARAMS) {
+            return {...state, savedParams: action.savedParams};
+        }
+    },
+// s c r o l l i n g
+    {
+        action: UPDATE__SCROLL_TYPE,
+        handler: function (state: IHomeState, action: UPDATE__SCROLL_TYPE) {
+            return {...state, isAnimating: action.isAnimating};
         }
     },
     {
-        action: FETCH_ALL__FAILURE,
-        handler: function (state: ISubState, action: FETCH_ALL__FAILURE) {
-            return Immutable.fromJS(state)
-                .setIn(['stats', 'status'], AsyncGetStatus.ERROR)
-                .setIn(['stats', 'error'], action.error)
-                .toJS();
+        action: UPDATE__WHEEL_EVENT,
+        handler: function (state: IHomeState, action: UPDATE__WHEEL_EVENT) {
+            return {...state, isWheel: action.isWheel};
+        }
+    },
+// v i e w s
+    {
+        action: OPEN__MENU,
+        handler: function (state: IHomeState, action: OPEN__MENU) {
+            return {...state, isMenuOpen: action.isMenuOpen};
         }
     },
     {
-      action: UPDATE__FILTER,
-      handler: function (state: ISubState, action: UPDATE__FILTER) {
-            return Immutable.fromJS(state)
-                .setIn(['filters' , action.filterIndex , 'active'], action.isActive)
-                .toJS();
-        }
-    },
-    {
-        action: UPDATE__SEARCH,
-        handler: function (state: ISubState, action: UPDATE__SEARCH) {
-            return Immutable.fromJS(state)
-                .setIn(['searchBarTyped'], action.searchText)
-                .toJS();
-        }
-    },
-    {
-        action: UPDATE__SORT,
-        handler: function (state: ISubState, action: UPDATE__SORT) {
-            return Immutable.fromJS(state)
-                .setIn(['sortByColumnIndex'], action.sortIndex)
-                .setIn(['columns' , action.sortIndex , 'isSortReversed'], action.isSortReversed)
-                .toJS();
+        action: UPDATE__VIEWPORT_DIMENSIONS,
+        handler: function (state: IHomeState, action: UPDATE__VIEWPORT_DIMENSIONS) {
+            return {
+                ...state,
+                    isMobile: breakPointTests.isMobile(action.width),
+                    isTablet: breakPointTests.isTablet(action.width),
+                    isLaptop: breakPointTests.isLaptop(action.width),
+                    width: action.width,
+                    height: action.height
+            };
         }
     }
 ]);
+
